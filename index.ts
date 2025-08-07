@@ -19,9 +19,15 @@ interface Response {
   status: number;
 }
 
+interface AppError {
+  message: string;
+  code?: number;
+  cause?: Error;
+}
+
 interface ObserverHandlers<T> {
   next?: (value: T) => void;
-  error?: (err: any) => void;
+  error?: (err: AppError) => void;
   complete?: () => void;
 }
 
@@ -40,7 +46,7 @@ class Observer<T> {
     }
   }
 
-  error(error: any): void {
+  error(error: AppError): void {
     if (!this.isUnsubscribed) {
       if (this.handlers.error) {
         this.handlers.error(error);
@@ -125,7 +131,7 @@ const handleRequest = (request: Request): Response => {
   return { status: HTTP_STATUS_OK };
 };
 
-const handleError = (error: any): Response => {
+const handleError = (error: AppError): Response => {
   return { status: HTTP_STATUS_INTERNAL_SERVER_ERROR };
 };
 
